@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.8'
 
 services:
   influxdb:
@@ -11,6 +11,12 @@ services:
       - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_PASSWORD}
     ports:
       - '8086:8086'
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8086/ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     volumes:
       - influxdb_data:/var/lib/influxdb
     networks:
@@ -30,6 +36,12 @@ services:
       - influxdb
     ports:
       - '3000:3000'
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:3000/api/health" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     volumes:
       - grafana_data:/var/lib/grafana
     networks:

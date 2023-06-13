@@ -12,6 +12,12 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: zoo1:2888:3888
     restart: always
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "2181" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 20s
     networks:
       - stock_market_network
 
@@ -40,6 +46,12 @@ services:
     depends_on:
       - zoo1
     restart: always
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "9092" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 20s
     networks:
       - stock_market_network
 
