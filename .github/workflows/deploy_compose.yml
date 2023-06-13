@@ -1,0 +1,37 @@
+name: Docker Compose CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build and run Time Series Docker Compose
+        run: docker-compose -f time-series-docker-compose.yml up --build -d
+
+      - name: Wait for health check Time Series
+        run: |
+          until docker inspect --format='{{json .State.Health.Status}}' influxdb | grep -q '"healthy"'; do sleep 1; done
+          until docker inspect --format='{{json .State.Health.Status}}' grafana | grep -q '"healthy"'; do sleep 1; done
+
+      - name: Build and run Spark Docker Compose
+        run: docker-compose -f spark-docker-compose.yml up --build -d
+
+      - name: Build and run Kafka Docker Compose
+        run: docker-compose -f kafka-docker-compose.yml up --build -d
+
+      - name: Wait for health check Kafka
+        run: |
+          until docker inspect --format='{{json .State.Health.Status}}' zoo1 | grep -q '"healthy"'; do sleep 1; done
+          until docker inspect --format='{{json .State.Health.Status}}' kafka1 | grep -q '"healthy"'; do sleep 1; done
+
+      - name: Cleanup
+        run: sh stop_all.sh
+
