@@ -19,7 +19,7 @@ jobs:
       - name: Wait for health check Time Series
         run: |
           until docker inspect --format='{{json .State.Health.Status}}' influxdb | grep -q '"healthy"'; do sleep 1; done
-          until docker inspect --format='{{json .State.Health.Status}}' grafana | grep -q '"healthy"'; do sleep 1; done
+          until docker inspect --format='{{json .State.Health.Status}}' grafana-server | grep -q '"healthy"'; do sleep 1; done
 
       - name: Build and run Spark Docker Compose
         run: docker-compose -f spark-docker-compose.yml up --build -d
