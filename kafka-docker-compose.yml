@@ -55,6 +55,24 @@ services:
     networks:
       - stock_market_network
 
+  init-kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        # blocks until kafka is reachable
+        kafka-topics --bootstrap-server kafka1:19092 --list
+
+        echo -e 'Creating kafka topics'
+        kafka-topics --bootstrap-server kafka1:19092 --create --if-not-exists --topic stock_market_company_information --replication-factor 1 --partitions 1
+
+        echo -e 'Successfully created the following topics:'
+        kafka-topics --bootstrap-server kafka1:19092 --list
+    depends_on:
+      - kafka1
+    networks:
+      - stock_market_network
 networks:
   stock_market_network:
     name: stock_market_network

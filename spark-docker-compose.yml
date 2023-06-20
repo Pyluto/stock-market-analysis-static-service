@@ -11,7 +11,7 @@ services:
       - SPARK_SSL_ENABLED=no
       - SPARK_USER=spark
     ports:
-      - '8080:8080'
+      - '8070:8080'
     networks:
       - stock_market_network
 
